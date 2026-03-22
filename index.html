@@ -1,5 +1,3 @@
-$graph = normalcurve(0, 1, -4, 4, "z", $zscore, "left",null,null, "blue",400,150) 
-$graph = addlabel($graph, $zscore, -.08, "z = $zscore", "blue", "below", 0)
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,23 +38,26 @@ $graph = addlabel($graph, $zscore, -.08, "z = $zscore", "blue", "below", 0)
         padding-left: 20px;
     }
     li {
-        margin-bottom: 15px; /* extra spacing */
+        margin-bottom: 15px;
     }
     code {
-    background-color: #eee;
-    padding: 4px 8px;
-    border-radius: 5px;
-    font-size: 1.25em;
-    font-family: Consolas, monospace;
-}
-    
-    .normal-plot {
+        background-color: #eee;
+        padding: 4px 8px;
+        border-radius: 5px;
+        font-size: 1.25em;
+        font-family: Consolas, monospace;
+    }
+    canvas {
+        border: 1px solid #ccc;
         margin-top: 20px;
         margin-bottom: 20px;
-        text-align: center;
+    }
+    input[type="number"] {
+        width: 60px;
+        font-size: 16px;
+        margin-left: 10px;
     }
 </style>
-<!-- MathJax for LaTeX -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </head>
 <body>
@@ -70,37 +71,38 @@ $graph = addlabel($graph, $zscore, -.08, "z = $zscore", "blue", "below", 0)
 <h2>Descriptive Statistics</h2>
 <ul>
     <li>Relative frequency=\(\frac{frequency}{\text{sum of all frequencies}}\)</li>
- <li>Class midpoint=\(\frac{\text{lower class limit + Upper class limit}}{2}\)</li>
+    <li>Class midpoint=\(\frac{\text{lower class limit + Upper class limit}}{2}\)</li>
     <li>Mean: <br>\(\mu = \frac{\sum x_i}{n}\)</li>
     <li> Excel Mean: <code>=average(numbers)</code></li>
     <li>Population standard deviation: <br>\(\sigma = \sqrt{\frac{\sum (x_i - \mu)^2}{N}}\)</li>
     <li> Excel population standard deviation <code>=stdev.p(numbers)</code></li>
     <li>Sample standard deviation: <br>\(s = \sqrt{\frac{\sum (x_i - \bar{x})^2}{n-1}}\)</li>
-     <li> Excel sample standard deviation <code>=stdev.s(numbers)</code></li>
-    <li>Population variance: <br>\(\sigma^2\) <code> =Var.P(numbers)</code></li>
-    <li>Sample variance: <br>\(s^2\) = <code>Var.S(numbers)</code></li>
+    <li> Excel sample standard deviation <code>=stdev.s(numbers)</code></li>
+    <li>Population variance: <br>\(\sigma^2\) = <code>VAR.P(numbers)</code></li>
+    <li>Sample variance: <br>\(s^2\) = <code>VAR.S(numbers)</code></li>
 </ul>
 
 <h2>Z-scores and Quartiles</h2>
 <ul>
     <li>Z-score: <br>\(z = \frac{x - \mu}{\sigma}\)</li>
-    <li> Excel z-score <code>STANDRADIZE(X,mean, standard Deviation)</code></li>
+    <li> Excel z-score <code>=STANDARDIZE(X, mean, standard_deviation)</code></li>
     <li>Find \(x\) from \(z\): <br>\(x = \mu + z \sigma\)</li>
-    <li>Quartiles: <br>\( Q_1\)  <code>=QUARTILE.INC(numbers)</code><br>
-                   \( Q_2\)<code>= QUARTILE.INC(numbers,2)</code><br>
-                    \(Q_3\) = <code>QUARTILE.INC(numbers,3)</code></li>
+    <li>Quartiles: <br>
+        \(Q_1\) <code>=QUARTILE.INC(numbers,1)</code><br>
+        \(Q_2\) <code>=QUARTILE.INC(numbers,2)</code><br>
+        \(Q_3\) <code>=QUARTILE.INC(numbers,3)</code>
+    </li>
     <li>IQR: <br>\(\text{IQR} = Q_3 - Q_1\)</li>
-    <li>Fences: <br>\(\text{Lower fence} = Q_1 - 1.5 \cdot \text{IQR}\)<br>
-                 \(\text{Upper fence} = Q_3 + 1.5 \cdot \text{IQR}\)</li>
+    <li>Fences: <br>\(\text{Lower fence} = Q_1 - 1.5 \cdot \text{IQR}\)<br>\(\text{Upper fence} = Q_3 + 1.5 \cdot \text{IQR}\)</li>
     <li>Five-number summary: Min, Q1, Q2, Q3, Max</li>
 </ul>
 
 <h2>Correlation and Regression</h2>
 <ul>
-    <li>Correlation coefficient: <br>\(r\)<code> = CORREL(array1, array2)</code></li>
+    <li>Correlation coefficient: <br>\(r\) <code>= CORREL(array1, array2)</code></li>
     <li>Regression line: <br>\(y = mx + b\)</li>
-    <li>Slope: <br>\(m\) = <code>SLOPE(ys,xs)</code><li>
-    <li>Intercept: <br> \(b \) =<code> INTERCEPT(ys,xs)</code></li>
+    <li>Slope: <br>\(m\) = <code>SLOPE(ys,xs)</code></li>
+    <li>Intercept: <br>\(b\) = <code>INTERCEPT(ys,xs)</code></li>
     <li>Residual: <br>\(\text{Residual} = \text{Observed value} - \text{Predicted value}\)</li>
 </ul>
 
@@ -121,27 +123,82 @@ $graph = addlabel($graph, $zscore, -.08, "z = $zscore", "blue", "below", 0)
 
 <h2>Normal Distribution</h2>
 <ul>
-    <li>Area to the left: <br>\(P(X \le x)\) <code>=NORM.DIST(x, Mean, Standard Dedviation,TRUE)</code></li>
-    <li>Area to the right: <br>\(P(X > x)\) <code>= 1 - NORM.DIST(x,Mean, Standard deviation,TRUE)</code> </li>
-    <li>Area between: <br>\(P(a \le X \le b) \)<code>= NORM.DIST(b, ,Mean,Standard deviation,TRUE) - NORM.DIST(a, Mean, Standard deviation, TRUE)</code></li>
-    <li>Given probability (area), find number: <br>\(x\) <code>= NORM.INV(area to the left of x, Mean, Standard deviation)</code></li>
+    <li>Area to the left: <br>\(P(X \le x)\) <code>=NORM.DIST(x, Mean, Standard Deviation, TRUE)</code></li>
+    <li>Area to the right: <br>\(P(X > x)\) <code>= 1 - NORM.DIST(x, Mean, Standard Deviation, TRUE)</code></li>
+    <li>Area between: <br>\(P(a \le X \le b)\) <code>= NORM.DIST(b, Mean, SD, TRUE) - NORM.DIST(a, Mean, SD, TRUE)</code></li>
+    <li>Given probability (area), find number: <br>\(x\) <code>= NORM.INV(area, Mean, Standard Deviation)</code></li>
 </ul>
 
+<!-- Interactive Normal Curve Section -->
+<h3>Interactive Normal Curve</h3>
+<label>z-score: <input type="number" id="zInput" value="1" step="0.1" min="-4" max="4"></label>
+<canvas id="normalCanvas" width="600" height="300"></canvas>
 
-<h2>Sampling Distributions</h2>
-<ul>
-    <li>Sample mean: <br>\(\mu_{\bar{x}} = \mu\)</li>
-    <li>Std dev of sample mean: <br>\(\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}}\)</li>
-    <li>Sample proportion: <br>\(\hat{p} = \frac{x}{n}\)</li>
-    <li>Mean of sample proportion: <br>\(\mu_{\hat{p}} = p\)</li>
-    <li>Std dev of sample proportion: <br>\(\sigma_{\hat{p}} = \sqrt{\frac{p(1-p)}{n}}\)</li>
-</ul>
+<script>
+// Canvas and normal curve functions
+const canvas = document.getElementById("normalCanvas");
+const ctx = canvas.getContext("2d");
+const width = canvas.width;
+const height = canvas.height;
 
-</div>
+function normalPDF(x, mu=0, sigma=1) {
+    return (1/(sigma * Math.sqrt(2*Math.PI))) * Math.exp(-0.5 * Math.pow((x-mu)/sigma, 2));
+}
+function xToPixel(x, minX=-4, maxX=4) { return (x - minX) / (maxX - minX) * width; }
+function yToPixel(y, scale=1.5) { return height - y * height * scale; }
+
+function drawNormal(zscore) {
+    ctx.clearRect(0, 0, width, height);
+
+    // Axes
+    ctx.beginPath();
+    ctx.moveTo(0, height); ctx.lineTo(width, height);
+    ctx.moveTo(50, 0); ctx.lineTo(50, height);
+    ctx.strokeStyle = "#333"; ctx.lineWidth = 2; ctx.stroke();
+
+    // Shaded area to left of z
+    ctx.beginPath();
+    const step = 0.01;
+    ctx.moveTo(xToPixel(-4), height);
+    for (let x=-4; x<=Math.min(zscore,4); x+=step) {
+        const y = normalPDF(x);
+        ctx.lineTo(xToPixel(x), yToPixel(y));
+    }
+    ctx.lineTo(xToPixel(Math.min(zscore,4)), height);
+    ctx.closePath();
+    ctx.fillStyle = "rgba(106,13,173,0.3)"; ctx.fill();
+
+    // Normal curve
+    ctx.beginPath();
+    for (let x=-4; x<=4; x+=step) {
+        const y = normalPDF(x);
+        const px = xToPixel(x);
+        const py = yToPixel(y);
+        if (x===-4) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = "#6a0dad"; ctx.lineWidth = 3; ctx.stroke();
+
+    // z-score line and label
+    if (zscore >= -4 && zscore <= 4) {
+        ctx.beginPath();
+        ctx.moveTo(xToPixel(zscore), height);
+        ctx.lineTo(xToPixel(zscore), yToPixel(normalPDF(zscore)));
+        ctx.strokeStyle = "blue"; ctx.lineWidth = 2; ctx.stroke();
+        ctx.fillStyle = "blue"; ctx.font = "16px Arial"; ctx.textAlign = "center";
+        ctx.fillText("z = " + zscore, xToPixel(zscore), yToPixel(normalPDF(zscore)) - 10);
+    }
+}
+
+// Initial draw
+const zInput = document.getElementById("zInput");
+drawNormal(parseFloat(zInput.value));
+zInput.addEventListener("input", () => drawNormal(parseFloat(zInput.value)));
+</script>
 
 <footer style="text-align:center; margin-top: 30px; color:#555;">
     <p>&copy; 2026 Asma Alayeb</p>
 </footer>
 
+</div>
 </body>
 </html>
