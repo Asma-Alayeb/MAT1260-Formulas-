@@ -97,6 +97,21 @@ input[type="number"] {
     margin-left: 5px;
 }
 
+button {
+    font-size: 16px;
+    padding: 5px 10px;
+    margin-top: 5px;
+    background-color: #6a0dad;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #b8860b;
+}
+
 canvas {
     border: 1px solid #ccc;
     display: block;
@@ -119,7 +134,6 @@ footer {
     padding-top: 10px;
 }
 </style>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </head>
 <body>
@@ -132,20 +146,19 @@ footer {
 </nav>
 
 <div class="content">
-
 <header>
     <h1>Interactive Normal Distribution</h1>
 </header>
 
 <div class="flex-container">
-
-    <!-- Z-score calculator on the left -->
+    <!-- Left Panel -->
     <div class="left-panel">
         <h3>Z-Score Calculator</h3>
         <div class="controls">
             <label>\( x: <input type="number" id="xInput" value="0" step="0.1"> \)</label><br>
             <label>\( \mu: <input type="number" id="meanInput" value="0" step="0.1"> \)</label><br>
-            <label>\( \sigma: <input type="number" id="sdInput" value="1" step="0.1"> \)</label>
+            <label>\( \sigma: <input type="number" id="sdInput" value="1" step="0.1"> \)</label><br>
+            <button id="calcZ">Calculate z</button>
         </div>
         <div class="area-display" id="zResult">\( z = 0.0000 \)</div>
 
@@ -163,12 +176,11 @@ footer {
         <div class="area-display" id="areaDisplay">\( P(X \le z) = 0.8413 \)</div>
     </div>
 
-    <!-- Normal curve on the right -->
+    <!-- Right Panel -->
     <div class="right-panel">
         <h3>Normal Curve</h3>
         <canvas id="normalCanvas" width="600" height="300"></canvas>
     </div>
-
 </div>
 
 <footer>
@@ -176,16 +188,15 @@ footer {
 </footer>
 
 <script>
-// Normal distribution functions
 const canvas = document.getElementById("normalCanvas");
 const ctx = canvas.getContext("2d");
 const width = canvas.width;
 const height = canvas.height;
 
-function normalPDF(x) { return (1/Math.sqrt(2*Math.PI)) * Math.exp(-0.5*x*x); }
-function normalCDF(z) { return 0.5 * (1 + erf(z/Math.sqrt(2))); }
-
-function erf(x) {
+// Normal distribution functions
+function normalPDF(x){ return (1/Math.sqrt(2*Math.PI))*Math.exp(-0.5*x*x);}
+function normalCDF(z){ return 0.5*(1 + erf(z/Math.sqrt(2))); }
+function erf(x){
     const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
     const sign = x>=0 ? 1 : -1;
     x = Math.abs(x);
@@ -194,19 +205,19 @@ function erf(x) {
     return sign*y;
 }
 
-function xToPixel(x) { return (x+4)/8 * width; }
-function yToPixel(y) { return height - y*height*1.5; }
+function xToPixel(x){ return (x+4)/8*width; }
+function yToPixel(y){ return height - y*height*1.5; }
 
-// Draw normal curve
+// Draw normal curve with annotation
 function drawNormal(probType, z1, z2=null){
     ctx.clearRect(0,0,width,height);
-    const step = 0.01;
+    const step=0.01;
 
     // shading
-    let startX, endX;
-    if(probType==='left'){ startX=-4; endX=z1; }
-    if(probType==='right'){ startX=z1; endX=4; }
-    if(probType==='between'){ startX=z1; endX=z2; }
+    let startX,endX;
+    if(probType==='left'){ startX=-4; endX=z1;}
+    if(probType==='right'){ startX=z1; endX=4;}
+    if(probType==='between'){ startX=z1; endX=z2;}
 
     ctx.beginPath();
     ctx.moveTo(xToPixel(startX), height);
@@ -221,7 +232,7 @@ function drawNormal(probType, z1, z2=null){
     // curve
     ctx.beginPath();
     for(let x=-4;x<=4;x+=step){
-        const y = normalPDF(x);
+        const y=normalPDF(x);
         if(x===-4) ctx.moveTo(xToPixel(x), yToPixel(y));
         else ctx.lineTo(xToPixel(x), yToPixel(y));
     }
@@ -229,24 +240,31 @@ function drawNormal(probType, z1, z2=null){
     ctx.lineWidth=3;
     ctx.stroke();
 
+    // annotate mean and z
+    ctx.fillStyle="#000";
+    ctx.font="14px Arial";
+    ctx.fillText("0 (mean)", xToPixel(0)-20, yToPixel(0)+15);
+    ctx.fillText("z₁", xToPixel(z1)-10, yToPixel(0)+15);
+    if(probType==='between') ctx.fillText("z₂", xToPixel(z2)-10, yToPixel(0)+15);
+
     // area display
     let areaVal, areaText;
     if(probType==='left'){ areaVal=normalCDF(z1); areaText=`P(X \\le z) = ${areaVal.toFixed(4)}`; }
     if(probType==='right'){ areaVal=1-normalCDF(z1); areaText=`P(X \\ge z) = ${areaVal.toFixed(4)}`; }
     if(probType==='between'){ areaVal=normalCDF(z2)-normalCDF(z1); areaText=`P(z_1 \\le X \\le z_2) = ${areaVal.toFixed(4)}`; }
 
-    document.getElementById("areaDisplay").innerHTML = "$" + areaText + "$";
+    document.getElementById("areaDisplay").innerHTML="$" + areaText + "$";
     MathJax.typesetPromise();
 }
 
 // Inputs
-const z1Input = document.getElementById("z1Input");
-const z2Input = document.getElementById("z2Input");
-const z2Label = document.getElementById("z2Label");
+const z1Input=document.getElementById("z1Input");
+const z2Input=document.getElementById("z2Input");
+const z2Label=document.getElementById("z2Label");
 
 function updateCurve(){
-    const type = document.querySelector('input[name="probType"]:checked').value;
-    z2Label.style.display = (type==='between')?"inline":"none";
+    const type=document.querySelector('input[name="probType"]:checked').value;
+    z2Label.style.display=(type==='between')?"inline":"none";
     drawNormal(type, parseFloat(z1Input.value), parseFloat(z2Input.value));
 }
 
@@ -256,10 +274,10 @@ document.querySelectorAll('input[name="probType"]').forEach(r=>r.addEventListene
 updateCurve();
 
 // Z-score calculator
-function updateZ(){
-    const x = parseFloat(document.getElementById("xInput").value);
-    const mean = parseFloat(document.getElementById("meanInput").value);
-    const sd = parseFloat(document.getElementById("sdInput").value);
+document.getElementById("calcZ").addEventListener("click", function(){
+    const x=parseFloat(document.getElementById("xInput").value);
+    const mean=parseFloat(document.getElementById("meanInput").value);
+    const sd=parseFloat(document.getElementById("sdInput").value);
 
     if(sd===0){ 
         document.getElementById("zResult").innerHTML="\\( \\sigma \\text{ cannot be 0} \\)";
@@ -267,17 +285,11 @@ function updateZ(){
         return; 
     }
 
-    const z = (x-mean)/sd;
-    document.getElementById("zResult").innerHTML = `\\( z = ${z.toFixed(4)} \\)`;
+    const z=(x-mean)/sd;
+    document.getElementById("zResult").innerHTML=`\\( z = ${z.toFixed(4)} \\)`;
     MathJax.typesetPromise();
-}
-
-document.getElementById("xInput").addEventListener("input", updateZ);
-document.getElementById("meanInput").addEventListener("input", updateZ);
-document.getElementById("sdInput").addEventListener("input", updateZ);
-updateZ();
+});
 </script>
-
 </div>
 </body>
 </html>
