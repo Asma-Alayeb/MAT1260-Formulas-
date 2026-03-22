@@ -84,9 +84,9 @@
     <li>Z-score: <br>\(z = \frac{x - \mu}{\sigma}\)</li>
     <li> Excel z-score <code>STANDRADIZE(X,mean, standard Deviation)</code></li>
     <li>Find \(x\) from \(z\): <br>\(x = \mu + z \sigma\)</li>
-    <li>Quartiles: <br>\(Q_1  <code>=QUARTILE.INC(numbers)</code>\)<br>
-                    \(Q_2 <code>= QUARTILE.INC(numbers,2)</code>\)<br>
-                    \(Q_3 = <code>QUARTILE.INC(numbers,3)</code>\)</li>
+    <li>Quartiles: <br> Q_1  <code>=QUARTILE.INC(numbers)</code><br>
+                    Q_2 <code>= QUARTILE.INC(numbers,2)</code><br>
+                    Q_3 = <code>QUARTILE.INC(numbers,3)</code></li>
     <li>IQR: <br>\(\text{IQR} = Q_3 - Q_1\)</li>
     <li>Fences: <br>\(\text{Lower fence} = Q_1 - 1.5 \cdot \text{IQR}\)<br>
                  \(\text{Upper fence} = Q_3 + 1.5 \cdot \text{IQR}\)</li>
@@ -95,9 +95,9 @@
 
 <h2>Correlation and Regression</h2>
 <ul>
-    <li>Correlation coefficient: <br>\(r = \text{CORREL(array1, array2)}\)</li>
+    <li>Correlation coefficient: <br>r<code> = CORREL(array1, array2)</code></li>
     <li>Regression line: <br>\(y = mx + b\)</li>
-    <li>Slope: <br>\(m = \text{SLOPE(ys,xs)}\)</li>
+    <li>Slope: <br>m = <code>SLOPE(ys,xs)</code><li>
     <li>Intercept: <br> b  =<code> INTERCEPT(ys,xs)</code></li>
     <li>Residual: <br>\(\text{Residual} = \text{Observed value} - \text{Predicted value}\)</li>
 </ul>
@@ -119,19 +119,12 @@
 
 <h2>Normal Distribution</h2>
 <ul>
-    <li>Area to the left: <br>\(P(X \le x) = \text{NORM.DIST}(x, \mu, \sigma, \text{TRUE})\)</li>
+    <li>Area to the left: <br>P(X \le x) <code>=NORM.DIST(x, Mean, Standard Dedviation,True)</code></li>
     <li>Area to the right: <br>\(P(X > x) = 1 - \text{NORM.DIST}(x, \mu, \sigma, \text{TRUE})\)</li>
     <li>Area between: <br>\(P(a \le X \le b) = \text{NORM.DIST}(b, \mu, \sigma, \text{TRUE}) - \text{NORM.DIST}(a, \mu, \sigma, \text{TRUE})\)</li>
     <li>Given percentile, find number: <br>\(x = \text{NORM.INV}(\text{area}, \mu, \sigma)\)</li>
 </ul>
 
-<div class="normal-plot">
-    <svg width="600" height="200">
-        <path d="M50,150 Q150,50 250,150" stroke="#6a0dad" stroke-width="3" fill="none"/>
-        <rect x="150" y="50" width="100" height="100" fill="rgba(106,13,173,0.2)" />
-        <text x="200" y="40" font-size="16" text-anchor="middle">Shaded Area</text>
-    </svg>
-</div>
 
 <h2>Sampling Distributions</h2>
 <ul>
