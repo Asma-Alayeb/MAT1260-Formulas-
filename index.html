@@ -9,84 +9,81 @@
         font-family: Arial, sans-serif;
         background-color: #f4f4f4;
         margin: 0;
+        display: flex;
+        min-height: 100vh;
         color: #333;
         line-height: 1.8;
-        display: flex;
     }
 
-    /* Sidebar navigation */
+    /* Left-side navigation */
     nav {
         width: 220px;
-        background-color: #6a0dad; /* Purple */
-        color: #ffd700; /* Gold */
-        min-height: 100vh;
+        background-color: #6a0dad; /* purple */
+        color: #ffd700; /* gold text */
         padding-top: 20px;
-        position: fixed;
-        left: 0;
-        top: 0;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: start;
     }
-
     nav ul {
         list-style: none;
         padding: 0;
         margin: 0;
+        width: 100%;
     }
-
     nav li {
-        margin-bottom: 20px;
-        text-align: center;
+        width: 100%;
     }
-
     nav a {
-        color: #ffd700; /* Gold text */
-        text-decoration: none;
-        font-weight: bold;
-        font-size: 18px;
         display: block;
-        padding: 10px 0;
-        transition: background 0.3s;
+        width: 100%;
+        text-decoration: none;
+        color: #ffd700;
+        padding: 12px 20px;
+        font-weight: bold;
     }
-
     nav a:hover {
-        background-color: #b8860b; /* Dark Goldenrod highlight */
+        background-color: #b8860b;
         color: #fff;
-    }
-
-    /* Main content */
-    .content {
-        margin-left: 240px; /* Space for sidebar */
-        padding: 20px;
-        max-width: 900px;
     }
 
     header {
-        background-color: #6a0dad;
+        background-color: #6a0dad; /* Purple */
         color: #fff;
         padding: 15px 0;
         text-align: center;
-        border-bottom: 5px solid #b8860b;
-        margin-bottom: 25px;
+        border-bottom: 5px solid #b8860b; /* Goldenrod border */
+        width: 100%;
     }
 
+    .main-content {
+        flex-grow: 1;
+        padding: 20px;
+        max-width: 900px;
+        margin-left: 0;
+    }
+
+    h1 {
+        font-size: 28px;
+        margin: 0;
+    }
     h2 {
         font-size: 22px;
         margin-top: 25px;
         color: #6a0dad;
     }
-
     ul {
         padding-left: 20px;
     }
-
     li {
         margin-bottom: 15px;
     }
-
     code {
         background-color: #eee;
         padding: 4px 8px;
         border-radius: 5px;
-        font-size: 1.25em;
+        font-size: 1.1em;
         font-family: Consolas, monospace;
     }
 </style>
@@ -97,78 +94,92 @@
 <nav>
     <ul>
         <li><a href="index.html">Statistics Formulas</a></li>
-        <li><a href="page1.html">Interactive Normal Distribution</a></li>
+        <li><a href="page1.html">Normal Distribution</a></li>
     </ul>
 </nav>
 
-<div class="content">
-<header>
-    <h1>MAT1260 Formula Sheet</h1>
-</header>
+<div class="main-content">
+    <header>
+        <h1>MAT1260 Formula Sheet</h1>
+    </header>
 
-<h2>Descriptive Statistics</h2>
-<ul>
-    <li>Relative frequency = \(\frac{frequency}{\text{sum of all frequencies}}\)</li>
-    <li>Class midpoint = \(\frac{\text{lower class limit + Upper class limit}}{2}\)</li>
-    <li>Mean: \(\mu = \frac{\sum x_i}{n}\)</li>
-    <li>Excel Mean: <code>=AVERAGE(numbers)</code></li>
-    <li>Population SD: \(\sigma = \sqrt{\frac{\sum (x_i - \mu)^2}{N}}\)</li>
-    <li>Excel population SD: <code>=STDEV.P(numbers)</code></li>
-    <li>Sample SD: \(s = \sqrt{\frac{\sum (x_i - \bar{x})^2}{n-1}}\)</li>
-    <li>Excel sample SD: <code>=STDEV.S(numbers)</code></li>
-</ul>
+    <h2>Descriptive Statistics</h2>
+    <ul>
+        <li>Relative frequency: \(\frac{frequency}{\text{sum of all frequencies}}\)</li>
+        <li>Class midpoint: \(\frac{\text{lower class limit + Upper class limit}}{2}\)</li>
+        <li>Mean: \(\mu = \frac{\sum x_i}{n}\)</li>
+        <li>Excel Mean: <code>=AVERAGE(numbers)</code></li>
+        <li>Population SD: \(\sigma = \sqrt{\frac{\sum (x_i - \mu)^2}{N}}\)</li>
+        <li>Excel population SD: <code>=STDEV.P(numbers)</code></li>
+        <li>Sample SD: \(s = \sqrt{\frac{\sum (x_i - \bar{x})^2}{n-1}}\)</li>
+        <li>Excel sample SD: <code>=STDEV.S(numbers)</code></li>
+        <li>Population variance: \(\sigma^2\) <code>=VAR.P(numbers)</code></li>
+        <li>Sample variance: \(s^2\) <code>=VAR.S(numbers)</code></li>
+    </ul>
 
-<h2>Z-scores and Quartiles</h2>
-<ul>
-    <li>Z-score: \(z = \frac{x - \mu}{\sigma}\)</li>
-    <li>Excel z-score: <code>=STANDARDIZE(X, mean, SD)</code></li>
-    <li>Quartiles: <code>=QUARTILE.INC(numbers,1/2/3)</code></li>
-</ul>
+    <h2>Z-scores and Quartiles</h2>
+    <ul>
+        <li>Z-score: \(z = \frac{x - \mu}{\sigma}\)</li>
+        <li>Excel Z-score: <code>=STANDARDIZE(X, mean, SD)</code></li>
+        <li>Find x from z: \(x = \mu + z\sigma\)</li>
+        <li>Quartiles: 
+            <br>\(Q_1 =\) <code>=QUARTILE.INC(numbers,1)</code>
+            <br>\(Q_2 =\) <code>=QUARTILE.INC(numbers,2)</code>
+            <br>\(Q_3 =\) <code>=QUARTILE.INC(numbers,3)</code>
+        </li>
+        <li>IQR: \(\text{IQR} = Q_3 - Q_1\)</li>
+        <li>Fences: 
+            <br>Lower fence: \(Q_1 - 1.5 \cdot \text{IQR}\)
+            <br>Upper fence: \(Q_3 + 1.5 \cdot \text{IQR}\)
+        </li>
+        <li>Five-number summary: Min, Q1, Q2, Q3, Max</li>
+    </ul>
 
-<h2>Correlation and Regression</h2>
-<ul>
-    <li>Correlation coefficient \(r\)= <code>=CORREL(array1, array2)</code></li>
-    <li>Regression line: \(y = mx + b\)</li>
-    <li>Slope: \(m\) <code>=SLOPE(ys,xs)</code></li>
-    <li>Intercept: \(b\)<code>=INTERCEPT(ys,xs)</code></li>
-</ul>
+    <h2>Correlation and Regression</h2>
+    <ul>
+        <li>Correlation coefficient: \(r =\) <code>=CORREL(array1,array2)</code></li>
+        <li>Regression line: \(y = mx + b\)</li>
+        <li>Slope: \(m =\) <code>=SLOPE(ys,xs)</code></li>
+        <li>Intercept: \(b =\) <code>=INTERCEPT(ys,xs)</code></li>
+        <li>Residual: Observed - Predicted</li>
+    </ul>
 
-<h2>Probability Rules</h2>
-<ul>
-    <li>General Addition: \(P(A \text{ or } B) = P(A) + P(B) - P(A \text{ and } B)\)</li>
-    <li>Complement: \(P(A^c) = 1 - P(A)\)</li>
-    <li>Multiplication: \(P(A \text{ and } B) = P(A) \cdot P(B|A)\)</li>
-    <li>Conditional: \(P(A|B) = \frac{P(A \text{ and } B)}{P(B)}\)</li>
-</ul>
+    <h2>Probability Rules</h2>
+    <ul>
+        <li>Addition: \(P(A \text{ or } B) = P(A) + P(B) - P(A \text{ and } B)\)</li>
+        <li>Complement: \(P(A^c) = 1 - P(A)\li>
+        <li>Multiplication: \(P(A \text{ and } B) = P(A) \cdot P(B|A)\li>
+        <li>Conditional: \(P(A|B) = \frac{P(A \text{ and } B)}{P(B)}\li>
+    </ul>
 
-<h2>Binomial Distribution</h2>
-<ul>
-    <li>Mean: \(\mu_{bi} = n \cdot p\)</li>
-    <li>SD: \(\sigma_{bi} = \sqrt{n \cdot p \cdot (1-p)}\)</li>
-    <li>Excel: <code>=BINOM.DIST(x, trials, probability, FALSE)</code></li>
-</ul>
+    <h2>Binomial Distribution</h2>
+    <ul>
+        <li>Mean: \(\mu_{bi} = n \cdot p\)</li>
+        <li>SD: \(\sigma_{bi} = \sqrt{n \cdot p \cdot (1-p)}\)</li>
+        <li>Excel: <code>=BINOM.DIST(x,trials,probability,FALSE)</code></li>
+    </ul>
 
-<h2>Normal Distribution</h2>
-<ul>
-    <li>\text{Area to the left of x} \(p(\le)\= : <code>=NORM.DIST(x, Mean, SD, TRUE)</code></li>
-    <li>Area to the right of x: <code>=1 - NORM.DIST(x, Mean, SD, TRUE)</code></li>
-    <li>area between a and b: <code>=NORM.DIST(b,Mean,SD,TRUE)-NORM.DIST(a,Mean,SD,TRUE)</code></li>
-    <li>Inverse: <code>=NORM.INV(area, Mean, SD)</code></li>
-</ul>
+    <h2>Normal Distribution</h2>
+    <ul>
+        <li>Area to the left: \(P(X \le x)\) <code>=NORM.DIST(x,Mean,SD,TRUE)</code></li>
+        <li>Area to the right: \(P(X > x)\) <code>=1-NORM.DIST(x,Mean,SD,TRUE)</code></li>
+        <li>Area between: \(P(a \le X \le b)\) <code>=NORM.DIST(b,Mean,SD,TRUE)-NORM.DIST(a,Mean,SD,TRUE)</code></li>
+        <li>Given probability, find x: \(x =\) <code>=NORM.INV(probability,Mean,SD)</code></li>
+    </ul>
 
-<h2>Sampling Distributions</h2>
-<ul>
-    <li>Sample mean: <br>\(\mu_{\bar{x}} = \mu\)</li>
-    <li>Standard deviation of sample mean: <br>\(\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}}\)</li>
-    <li>Sample proportion: <br>\(\hat{p} = \frac{x}{n}\)</li>
-    <li>Mean of sample proportion: <br>\(\mu_{\hat{p}} = p\)</li>
-    <li>Standard deviation of sample proportion: <br>\(\sigma_{\hat{p}} = \sqrt{\frac{p(1-p)}{n}}\)</li>
-</ul>
+    <h2>Sampling Distributions</h2>
+    <ul>
+        <li>Sample mean: \(\mu_{\bar{x}} = \mu\)</li>
+        <li>Std dev of sample mean: \(\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}}\)</li>
+        <li>Sample proportion: \(\hat{p} = \frac{x}{n}\)</li>
+        <li>Mean of sample proportion: \(\mu_{\hat{p}} = p\)</li>
+        <li>Std dev of sample proportion: \(\sigma_{\hat{p}} = \sqrt{\frac{p(1-p)}{n}}\)</li>
+    </ul>
 
-<footer style="text-align:center; margin-top: 30px; color:#555;">
-    <p>&copy; 2026 Asma Alayeb</p>
-</footer>
-
+    <footer style="text-align:center; margin-top: 30px; color:#555;">
+        <p>&copy; 2026 Asma Alayeb</p>
+    </footer>
 </div>
+
 </body>
 </html>
