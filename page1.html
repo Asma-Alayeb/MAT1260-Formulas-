@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAT1260 Formula Sheet with Normal Curve</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+        line-height: 1.8;
+    }
+    header {
+        background-color: #6a0dad;
+        color: #fff;
+        padding: 15px 0;
+        text-align: center;
+        border-bottom: 5px solid #b8860b;
+        margin-bottom: 25px;
+    }
+    .content {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    h1 { font-size: 28px; margin: 0; }
+    h2 { font-size: 22px; margin-top: 25px; color: #6a0dad; }
+    ul { padding-left: 20px; }
+    li { margin-bottom: 15px; }
+    code {
+        background-color: #eee;
+        padding: 4px 8px;
+        border-radius: 5px;
+        font-size: 1.25em;
+        font-family: Consolas, monospace;
+    }
+    canvas {
+        border: 1px solid #ccc;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+    input[type="number"] {
+        width: 60px;
+        font-size: 16px;
+        margin-left: 10px;
+    }
+    .area-display {
+        font-weight: bold;
+        font-size: 16px;
+        margin-bottom: 20px;
+        color: #6a0dad;
+    }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+
+<header>
+    <h1>MAT1260 Formula Sheet</h1>
+</header>
+
+<div class="content">
+
+<h2>Normal Distribution</h2>
+<ul>
+    <li>Area to the left: <code>=NORM.DIST(x, Mean, Standard Deviation, TRUE)</code></li>
+    <li>Area to the right: <code>=1 - NORM.DIST(x, Mean, Standard Deviation, TRUE)</code></li>
+    <li>Given percentile, find number: <code>=NORM.INV(area, Mean, Standard Deviation)</code></li>
+</ul>
+
+<h3>Interactive Normal Curve</h3>
+<label>z-score: <input type="number" id="zInput" value="1" step="0.01" min="-4" max="4"></label>
+<div class="area-display" id="areaDisplay">P(X ≤ z) = 0.8413</div>
+<canvas id="normalCanvas" width="600" height="300"></canvas>
+
+<script>
+// Canvas setup
+const canvas = document.getElementById("normalCanvas");
+const ctx = canvas.getContext("2d");
+const width = canvas.width;
+const height = canvas.height;
+
+// Standard normal PDF
+function normalPDF(x, mu=0, sigma=1) {
+    return (1/(sigma * Math.sqrt(2*Math.PI))) * Math.exp(-0.5 * Math.pow((x-mu)/sigma,2));
+}
+
+// Standard normal CDF approximation (using error function)
+function normalCDF(z) {
+    return 0.5 * (1 + erf(z / Math.sqrt(2)));
+}
+
+// Approximate error function
+function erf(x) {
+    // Abramowitz and Stegun formula 7.1.26
+    const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
+    const sign = x >= 0 ? 1 : -1;
+    x = Math.abs(x);
+    const t = 1/(1+p*x);
+    const y = 1 - (((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);
+    return sign*y;
+}
+
+// Convert x/y to canvas pixels
+function xToPixel(x, minX=-4, maxX=4) { return (x - minX)/(maxX - minX) * width; }
+function yToPixel(y, scale=1.5) { return height - y*height*scale; }
+
+// Draw normal curve and shaded area
+function drawNormal(zscore) {
+    ctx.clearRect(0,0,width,height);
+
+    // Draw axes
+    ctx.beginPath();
+    ctx.moveTo(0, height); ctx.lineTo(width, height);
+    ctx.moveTo(50,0); ctx.lineTo(50,height);
+    ctx.strokeStyle = "#333"; ctx.lineWidth = 2; ctx.stroke();
+
+    const step = 0.01;
+
+    // Shaded area
+    ctx.beginPath();
+    ctx.moveTo(xToPixel(-4), height);
+    for (let x=-4; x<=Math.min(zscore,4); x+=step) {
+        const y = normalPDF(x);
+        ctx.lineTo(xToPixel(x), yToPixel(y));
+    }
+    ctx.lineTo(xToPixel(Math.min(zscore,4)), height);
+    ctx.closePath();
+    ctx.fillStyle = "rgba(106,13,173,0.3)";
+    ctx.fill();
+
+    // Normal curve
+    ctx.beginPath();
+    for (let x=-4; x<=4; x+=step) {
+        const y = normalPDF(x);
+        const px = xToPixel(x);
+        const py = yToPixel(y);
+        if (x===-4) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = "#6a0dad"; ctx.lineWidth = 3; ctx.stroke();
+
+    // z-score line
+    if (zscore >= -4 && zscore <=4) {
+        ctx.beginPath();
+        ctx.moveTo(xToPixel(zscore), height);
+        ctx.lineTo(xToPixel(zscore), yToPixel(normalPDF(zscore)));
+        ctx.strokeStyle = "blue"; ctx.lineWidth = 2; ctx.stroke();
+    }
+
+    // Update area display
+    const area = normalCDF(zscore).toFixed(4);
+    document.getElementById("areaDisplay").textContent = `P(X ≤ z) = ${area}`;
+}
+
+// Initial draw
+const zInput = document.getElementById("zInput");
+drawNormal(parseFloat(zInput.value));
+zInput.addEventListener("input", () => drawNormal(parseFloat(zInput.value)));
+</script>
+
+</div>
+<footer style="text-align:center; margin-top: 30px; color:#555;">
+    <p>&copy; 2026 Asma Alayeb</p>
+</footer>
+</body>
+</html>
