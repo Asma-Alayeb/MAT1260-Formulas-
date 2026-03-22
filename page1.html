@@ -4,213 +4,212 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MAT1260 Normal Distribution</title>
+
 <style>
     body {
         font-family: Arial, sans-serif;
         background-color: #f4f4f4;
         margin: 0;
         line-height: 1.8;
-        display: flex;
     }
 
-    /* Sidebar navigation */
+    /* Sidebar */
     nav {
         width: 220px;
-        background-color: #6a0dad; /* Purple */
-        color: #ffd700; /* Gold text */
+        background-color: #6a0dad;
+        color: #ffd700;
         min-height: 100vh;
-        padding-top: 20px;
         position: fixed;
         left: 0;
         top: 0;
+        padding-top: 20px;
     }
 
-    nav ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    nav li {
-        margin-bottom: 20px;
-        text-align: center;
-    }
+    nav ul { list-style: none; padding: 0; }
+    nav li { text-align: center; margin-bottom: 20px; }
 
     nav a {
         color: #ffd700;
         text-decoration: none;
         font-weight: bold;
-        font-size: 18px;
         display: block;
-        padding: 10px 0;
-        transition: background 0.3s;
+        padding: 10px;
     }
 
     nav a:hover {
-        background-color: #b8860b; /* Dark golden highlight */
-        color: #fff;
+        background-color: #b8860b;
+        color: white;
     }
 
-    /* Main content */
+    /* FIXED HEADER */
+    header {
+        background-color: #6a0dad;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        border-bottom: 5px solid #b8860b;
+
+        margin-left: 220px; /* aligns with sidebar */
+    }
+
+    /* Content */
     .content {
-        margin-left: 240px; /* space for sidebar */
+        margin-left: 240px;
         padding: 20px;
         max-width: 900px;
     }
 
-    header {
-        background-color: #6a0dad;
-        color: #fff;
-        padding: 15px 0;
-        text-align: center;
-        border-bottom: 5px solid #b8860b;
-        margin-bottom: 25px;
+    canvas {
+        border: 1px solid #ccc;
+        margin-top: 20px;
     }
 
-    canvas { border: 1px solid #ccc; margin-top: 20px; margin-bottom: 10px; }
-    input[type="number"] { width: 60px; font-size: 16px; margin-left: 5px; }
-    .area-display { font-weight: bold; font-size: 16px; margin-bottom: 10px; color: #6a0dad; }
-    .controls { margin-bottom: 10px; }
+    input {
+        margin: 5px;
+    }
+
+    .area-display {
+        font-weight: bold;
+        color: #6a0dad;
+        margin: 10px 0;
+    }
+
+    .calculator {
+        background: #fff;
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 25px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </head>
+
 <body>
 
 <nav>
     <ul>
-        <li><a href="index.html">Statistics Formulas</a></li>
-        <li><a href="page1.html">Interactive Normal Distribution</a></li>
+        <li><a href="index.html">Formulas</a></li>
+        <li><a href="page1.html">Normal Curve</a></li>
     </ul>
 </nav>
 
-<div class="content">
 <header>
     <h1>Normal Distribution Interactive Curve</h1>
 </header>
 
+<div class="content">
+
 <h3>Interactive Normal Curve</h3>
 
-<div class="controls">
-    <label><input type="radio" name="probType" value="left" checked> Left of z</label>
-    <label><input type="radio" name="probType" value="right"> Right of z</label>
-    <label><input type="radio" name="probType" value="between"> Between z1 & z2</label>
+<label><input type="radio" name="type" value="left" checked> Left</label>
+<label><input type="radio" name="type" value="right"> Right</label>
+<label><input type="radio" name="type" value="between"> Between</label>
+
+<br>
+
+z1: <input type="number" id="z1" value="1" step="0.1">
+<span id="z2box" style="display:none;">
+z2: <input type="number" id="z2" value="2" step="0.1">
+</span>
+
+<div class="area-display" id="area"></div>
+
+<canvas id="canvas" width="600" height="300"></canvas>
+
+<!-- Z SCORE CALCULATOR -->
+<div class="calculator">
+    <h3>Z-Score Calculator</h3>
+    x: <input type="number" id="xVal">
+    mean: <input type="number" id="meanVal">
+    sd: <input type="number" id="sdVal">
+
+    <button onclick="calcZ()">Calculate</button>
+
+    <p id="zResult"></p>
 </div>
 
-<div class="controls">
-    <label>z1: <input type="number" id="z1Input" value="1" step="0.01" min="-4" max="4"></label>
-    <label id="z2Label" style="display:none;">z2: <input type="number" id="z2Input" value="2" step="0.01" min="-4" max="4"></label>
 </div>
-
-<div class="area-display" id="areaDisplay">P(X ≤ z) = 0.8413</div>
-<canvas id="normalCanvas" width="600" height="300"></canvas>
 
 <script>
-const canvas = document.getElementById("normalCanvas");
+const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-const width = canvas.width;
-const height = canvas.height;
 
-function normalPDF(x, mu=0, sigma=1) {
-    return (1/(sigma*Math.sqrt(2*Math.PI))) * Math.exp(-0.5*Math.pow((x-mu)/sigma,2));
+function pdf(x){
+    return (1/Math.sqrt(2*Math.PI))*Math.exp(-0.5*x*x);
 }
 
-function normalCDF(z) { return 0.5 * (1 + erf(z/Math.sqrt(2))); }
-
-function erf(x) {
+function erf(x){
     const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
-    const sign = x>=0 ? 1 : -1;
-    x = Math.abs(x);
-    const t = 1/(1+p*x);
-    const y = 1 - (((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t*Math.exp(-x*x));
-    return sign*y;
+    const sign = x>=0?1:-1;
+    x=Math.abs(x);
+    const t=1/(1+p*x);
+    return sign*(1-(((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t*Math.exp(-x*x)));
 }
 
-function xToPixel(x, minX=-4, maxX=4) { return (x - minX)/(maxX - minX) * width; }
-function yToPixel(y, scale=1.5) { return height - y*height*scale; }
+function cdf(x){
+    return 0.5*(1+erf(x/Math.sqrt(2)));
+}
 
-function drawNormal(probType, z1, z2=null) {
-    ctx.clearRect(0, 0, width, height);
-    const step = 0.01;
+function draw(){
+    const type = document.querySelector('input[name="type"]:checked').value;
+    const z1 = parseFloat(document.getElementById("z1").value);
+    const z2 = parseFloat(document.getElementById("z2").value);
 
-    // Axes
+    ctx.clearRect(0,0,600,300);
+
+    function xPix(x){ return (x+4)/8*600; }
+    function yPix(y){ return 300 - y*300*1.5; }
+
+    let start=-4,end=4;
+    if(type==="left"){ start=-4; end=z1; }
+    if(type==="right"){ start=z1; end=4; }
+    if(type==="between"){ start=z1; end=z2; }
+
+    // Shade
     ctx.beginPath();
-    ctx.moveTo(0,height); ctx.lineTo(width,height);
-    ctx.moveTo(50,0); ctx.lineTo(50,height);
-    ctx.strokeStyle = "#333"; ctx.lineWidth = 2; ctx.stroke();
-
-    let startX, endX;
-    if(probType==='left'){ startX=-4; endX=z1; }
-    if(probType==='right'){ startX=z1; endX=4; }
-    if(probType==='between'){ startX=z1; endX=z2; }
-
-    ctx.beginPath();
-    ctx.moveTo(xToPixel(startX), height);
-    for(let x=startX; x<=endX; x+=step){
-        const y = normalPDF(x);
-        ctx.lineTo(xToPixel(x), yToPixel(y));
+    ctx.moveTo(xPix(start),300);
+    for(let x=start;x<=end;x+=0.01){
+        ctx.lineTo(xPix(x), yPix(pdf(x)));
     }
-    ctx.lineTo(xToPixel(endX), height);
-    ctx.closePath();
-    ctx.fillStyle = "rgba(106,13,173,0.3)";
+    ctx.lineTo(xPix(end),300);
+    ctx.fillStyle="rgba(106,13,173,0.3)";
     ctx.fill();
 
+    // Curve
     ctx.beginPath();
-    for(let x=-4; x<=4; x+=step){
-        const y = normalPDF(x);
-        if(x===-4) ctx.moveTo(xToPixel(x), yToPixel(y)); else ctx.lineTo(xToPixel(x), yToPixel(y));
+    for(let x=-4;x<=4;x+=0.01){
+        if(x===-4) ctx.moveTo(xPix(x),yPix(pdf(x)));
+        else ctx.lineTo(xPix(x),yPix(pdf(x)));
     }
-    ctx.strokeStyle = "#6a0dad";
-    ctx.lineWidth = 3;
+    ctx.strokeStyle="#6a0dad";
+    ctx.lineWidth=3;
     ctx.stroke();
 
-    ctx.strokeStyle = "blue"; ctx.lineWidth = 2;
-    ctx.fillStyle = "blue"; ctx.font="16px Arial"; ctx.textAlign="center";
-
-    if(probType!=='between'){
-        ctx.beginPath();
-        ctx.moveTo(xToPixel(z1), height);
-        ctx.lineTo(xToPixel(z1), yToPixel(normalPDF(z1)));
-        ctx.stroke();
-        ctx.fillText("z = " + z1, xToPixel(z1), yToPixel(normalPDF(z1))-10);
-    } else {
-        ctx.beginPath();
-        ctx.moveTo(xToPixel(z1), height); ctx.lineTo(xToPixel(z1), yToPixel(normalPDF(z1))); ctx.stroke();
-        ctx.fillText("z1 = " + z1, xToPixel(z1), yToPixel(normalPDF(z1))-10);
-        ctx.beginPath();
-        ctx.moveTo(xToPixel(z2), height); ctx.lineTo(xToPixel(z2), yToPixel(normalPDF(z2))); ctx.stroke();
-        ctx.fillText("z2 = " + z2, xToPixel(z2), yToPixel(normalPDF(z2))-10);
-    }
-
     let area;
-    if(probType==='left') area = normalCDF(z1);
-    if(probType==='right') area = 1 - normalCDF(z1);
-    if(probType==='between') area = normalCDF(z2) - normalCDF(z1);
-    document.getElementById("areaDisplay").innerText = "P(X " + (probType==='left'? "≤":"≥") + " z) = " + area.toFixed(4);
+    if(type==="left") area=cdf(z1);
+    if(type==="right") area=1-cdf(z1);
+    if(type==="between") area=cdf(z2)-cdf(z1);
+
+    document.getElementById("area").innerText="Area = "+area.toFixed(4);
 }
 
-const z1Input = document.getElementById("z1Input");
-const z2Input = document.getElementById("z2Input");
-const z2Label = document.getElementById("z2Label");
-const radios = document.querySelectorAll('input[name="probType"]');
+function calcZ(){
+    const x = parseFloat(document.getElementById("xVal").value);
+    const mean = parseFloat(document.getElementById("meanVal").value);
+    const sd = parseFloat(document.getElementById("sdVal").value);
 
-function update() {
-    const probType = document.querySelector('input[name="probType"]:checked').value;
-    z2Label.style.display = (probType==='between') ? "inline" : "none";
-    const z1 = parseFloat(z1Input.value);
-    const z2 = probType==='between' ? parseFloat(z2Input.value) : null;
-    drawNormal(probType, z1, z2);
+    const z = (x - mean)/sd;
+    document.getElementById("zResult").innerText = "z = " + z.toFixed(4);
 }
 
-z1Input.addEventListener("input", update);
-z2Input.addEventListener("input", update);
-radios.forEach(r => r.addEventListener("change", update));
+document.querySelectorAll("input").forEach(el=>el.addEventListener("input",draw));
+document.querySelectorAll("input[name='type']").forEach(el=>el.addEventListener("change",()=>{
+    document.getElementById("z2box").style.display =
+        el.value==="between" ? "inline" : "none";
+}));
 
-update();
+draw();
 </script>
 
-<footer style="text-align:center; margin-top: 30px; color:#555;">
-    <p>&copy; 2026 Asma Alayeb</p>
-</footer>
-</div>
 </body>
 </html>
