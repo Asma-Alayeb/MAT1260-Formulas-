@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MAT1260 Formula Sheet</title>
+<title>MAT1260 Normal Distribution</title>
 
 <style>
     body {
@@ -73,33 +73,17 @@
     .main-content {
         margin-left: 220px;
         padding: 25px;
-        max-width: 1100px;
-    }
-
-    h1 { margin: 0; }
-    h2 { color: #6a0dad; margin-top: 30px; }
-
-    ul { padding-left: 20px; }
-    li { margin-bottom: 12px; }
-
-    code {
-        background-color: #eee;
-        padding: 4px 8px;
-        border-radius: 5px;
-        font-family: Consolas, monospace;
-    }
-
-    /* Curve + Calculator Layout */
-    .interactive-section {
-        display: flex;
-        gap: 40px;
-        align-items: flex-start;
-        flex-wrap: wrap;
-        margin-top: 20px;
+        max-width: 900px;
     }
 
     canvas {
         border: 1px solid #ccc;
+        margin-top: 20px;
+    }
+
+    input {
+        width: 80px;
+        margin: 5px;
     }
 
     .calculator {
@@ -107,12 +91,8 @@
         padding: 15px;
         border-radius: 8px;
         border: 1px solid #ccc;
-        min-width: 220px;
-    }
-
-    input {
-        width: 80px;
-        margin: 5px;
+        margin-bottom: 20px;
+        max-width: 300px;
     }
 
     .area-display {
@@ -144,62 +124,48 @@
 </nav>
 
 <header>
-    <h1>MAT1260 Formula Sheet</h1>
+    <h1>Normal Distribution Interactive Curve</h1>
 </header>
 
 <div class="main-content">
 
-<!-- INTERACTIVE SECTION -->
-<div class="interactive-section">
+<!-- Z SCORE CALCULATOR (NOW ABOVE CURVE) -->
+<div class="calculator">
+    <h3>Z-Score Calculator</h3>
+    <label>X: <input type="number" id="xVal"></label><br>
+    <label>Mean (μ): <input type="number" id="meanVal"></label><br>
+    <label>SD (σ): <input type="number" id="sdVal"></label><br><br>
+    <button onclick="calcZ()">Compute</button>
+    <p id="zResult"></p>
+</div>
 
-    <!-- Bell Curve -->
-    <div>
-        <canvas id="normalCanvas" width="600" height="300"></canvas>
-        <div class="area-display" id="areaDisplay">P(X ≤ z) = 0.8413</div>
-    </div>
-
-    <!-- Z SCORE CALCULATOR -->
-    <div class="calculator">
-        <h3>Z-Score Calculator</h3>
-        <label>X: <input type="number" id="xVal"></label><br>
-        <label>Mean (μ): <input type="number" id="meanVal"></label><br>
-        <label>SD (σ): <input type="number" id="sdVal"></label><br><br>
-        <button onclick="calcZ()">Compute</button>
-        <p id="zResult"></p>
-    </div>
+<!-- ORIGINAL NORMAL CURVE -->
+<div class="area-display" id="areaDisplay">P(X ≤ z) = 0.8413</div>
+<canvas id="normalCanvas" width="600" height="300"></canvas>
 
 </div>
 
-<h2>Descriptive Statistics</h2>
-<ul>
-    <li>Relative frequency: \(\frac{frequency}{\text{sum of all frequencies}}\)</li>
-    <li>Class midpoint: \(\frac{\text{lower class limit + Upper class limit}}{2}\)</li>
-    <li>Mean: \(\mu = \frac{\sum x_i}{n}\)</li>
-    <li>Excel Mean: <code>=AVERAGE(numbers)</code></li>
-    <li>Population SD: \(\sigma = \sqrt{\frac{\sum (x_i - \mu)^2}{N}}\)</li>
-    <li>Excel population SD: <code>=STDEV.P(numbers)</code></li>
-    <li>Sample SD: \(s = \sqrt{\frac{\sum (x_i - \bar{x})^2}{n-1}}\)</li>
-    <li>Excel sample SD: <code>=STDEV.S(numbers)</code></li>
-    <li>Population variance: \(\sigma^2\) <code>=VAR.P(numbers)</code></li>
-    <li>Sample variance: \(s^2\) <code>=VAR.S(numbers)</code></li>
-</ul>
-
-<!-- JS -->
 <script>
 const canvas = document.getElementById("normalCanvas");
 const ctx = canvas.getContext("2d");
+const width = canvas.width;
+const height = canvas.height;
 
 function normalPDF(x) {
     return (1/Math.sqrt(2*Math.PI)) * Math.exp(-0.5*x*x);
 }
 
-function drawCurve(){
-    ctx.clearRect(0,0,600,300);
+function xToPixel(x) { return (x + 4) / 8 * width; }
+function yToPixel(y) { return height - y * height * 1.5; }
 
+function drawCurve(){
+    ctx.clearRect(0,0,width,height);
+
+    // curve
     ctx.beginPath();
     for(let x=-4; x<=4; x+=0.01){
-        let px = (x+4)/8*600;
-        let py = 300 - normalPDF(x)*1000;
+        let px = xToPixel(x);
+        let py = yToPixel(normalPDF(x));
         if(x===-4) ctx.moveTo(px,py);
         else ctx.lineTo(px,py);
     }
@@ -210,6 +176,7 @@ function drawCurve(){
 
 drawCurve();
 
+/* Z SCORE CALCULATOR */
 function calcZ(){
     let x = parseFloat(document.getElementById("xVal").value);
     let mean = parseFloat(document.getElementById("meanVal").value);
@@ -229,6 +196,5 @@ function calcZ(){
     <p>&copy; 2026 Asma Alayeb</p>
 </footer>
 
-</div>
 </body>
 </html>
